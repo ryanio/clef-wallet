@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
 import { withStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
@@ -7,6 +8,7 @@ import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import web3 from '../lib/web3';
 import AccountList from './AccountList';
+import { addAccounts } from '../store/app/actions';
 
 const styles = {
   paper: { padding: 25 }
@@ -14,30 +16,24 @@ const styles = {
 
 class Dashboard extends React.Component {
   static propTypes = {
-    classes: PropTypes.object.isRequired
+    classes: PropTypes.object.isRequired,
+    accounts: PropTypes.array.isRequired,
+    dispatch: PropTypes.func.isRequired
   };
 
-  constructor(props) {
-    super(props);
-    this.state = {
-      accounts: []
-    };
-  }
-
   async getAccounts() {
+    const { dispatch } = this.props;
     let accounts = [];
     try {
       accounts = await web3.eth.getAccounts();
     } catch (error) {
       console.error(error);
     }
-    this.setState({ accounts });
-    return accounts;
+    dispatch(addAccounts(accounts));
   }
 
   render() {
-    const { classes } = this.props;
-    const { accounts } = this.state;
+    const { classes, accounts } = this.props;
     return (
       <Grid container spacing={3}>
         <Grid item xs={6}>
@@ -68,4 +64,8 @@ class Dashboard extends React.Component {
   }
 }
 
-export default withStyles(styles)(Dashboard);
+function mapStateToProps(state) {
+  return { accounts: state.app.accounts };
+}
+
+export default connect(mapStateToProps)(withStyles(styles)(Dashboard));

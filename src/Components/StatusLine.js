@@ -20,11 +20,12 @@ function LatestBlock(props) {
           timestamp
         }
       }
-    `
+    `,
+    { pollInterval: 3000 }
   );
 
   if (loading) return <p>Loading...</p>;
-  if (error) return <p>Error: {error}</p>;
+  if (error) return <p>Error: {error.toString()}</p>;
 
   const blockNumber = Number(
     web3.utils.hexToNumberString(data.block.number)
@@ -32,12 +33,11 @@ function LatestBlock(props) {
   const timestamp = Number(web3.utils.hexToNumberString(data.block.timestamp));
 
   let timestampColor = 'green';
-  console.log(new Date().getTime());
-  console.log(timestamp * 1000);
-  if (new Date().getTime() / 1000 - timestamp >= 180) {
+  const nowTimestamp = new Date().getTime() / 1000;
+  if (nowTimestamp - timestamp >= 180) {
     timestampColor = 'red';
-  } else if (new Date().getTime() / 1000 - timestamp >= 60) {
-    timestampColor = 'yellow';
+  } else if (nowTimestamp - timestamp >= 60) {
+    timestampColor = 'orange';
   }
 
   return (
@@ -46,7 +46,11 @@ function LatestBlock(props) {
         className={classes.statusIcon}
         style={{ backgroundColor: timestampColor }}
       />
-      Connected to latest blocks
+      {timestampColor === 'green' ? (
+        <span>Connected to latest blocks</span>
+      ) : (
+        <span>Not connected to latest blocks</span>
+      )}
       <LayersIcon className={classes.icon} />
       {blockNumber}
       <span
@@ -54,6 +58,7 @@ function LatestBlock(props) {
         style={{ color: timestampColor === 'green' ? 'black' : timestampColor }}
       >
         <AvTimerIcon className={classes.icon} />
+        {timestampColor !== 'green' && <span>Last block registered </span>}
         <TimeAgo date={new Date(timestamp) * 1000} />
       </span>
     </span>

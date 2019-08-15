@@ -3,12 +3,12 @@ import PropTypes from 'prop-types';
 import { gql } from 'apollo-boost';
 import { useQuery } from '@apollo/react-hooks';
 import { Identicon } from 'ethereum-react-components';
+import { Link } from 'react-router-dom';
 import { withStyles } from '@material-ui/core/styles';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import ListItemAvatar from '@material-ui/core/ListItemAvatar';
-import Avatar from '@material-ui/core/Avatar';
 import web3 from '../lib/web3';
 
 function Balance({ address }) {
@@ -34,7 +34,16 @@ function Balance({ address }) {
   return `${balanceEther} ether`;
 }
 
-const styles = {};
+const styles = {
+  listItem: {
+    textDecoration: 'none'
+  },
+  list: {
+    a: {
+      color: 'black'
+    }
+  }
+};
 
 class AccountList extends React.Component {
   static propTypes = {
@@ -43,7 +52,7 @@ class AccountList extends React.Component {
   };
 
   render() {
-    const { accounts } = this.props;
+    const { classes, accounts } = this.props;
 
     if (accounts.length === 0) {
       return (
@@ -54,24 +63,25 @@ class AccountList extends React.Component {
     }
 
     return (
-      <List>
-        {accounts.map(address => {
+      <List className={classes.list}>
+        {accounts.map(account => {
+          const { address } = account;
           return (
-            <ListItem key={address}>
-              <ListItemAvatar>
-                <Avatar>
+            <Link to={`/accounts/${address}`} key={address}>
+              <ListItem className={classes.listItem} button>
+                <ListItemAvatar style={{ textAlign: 'center' }}>
                   <Identicon
                     address={address}
                     size="small"
                     style={{ verticalAlign: 'middle', marginRight: 5 }}
-                  />{' '}
-                </Avatar>
-              </ListItemAvatar>
-              <ListItemText
-                primary={address}
-                secondary={<Balance address={address} />}
-              />
-            </ListItem>
+                  />
+                </ListItemAvatar>
+                <ListItemText
+                  primary={address}
+                  secondary={<Balance address={address} />}
+                />
+              </ListItem>
+            </Link>
           );
         })}
       </List>
