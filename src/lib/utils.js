@@ -1,25 +1,18 @@
-export const timeSince = timeStamp => {
-  const now = new Date(),
-    secondsPast = (now.getTime() - timeStamp.getTime()) / 1000;
-  if (secondsPast < 60) {
-    return parseInt(secondsPast) + 's';
-  }
-  if (secondsPast < 3600) {
-    return parseInt(secondsPast / 60) + 'm';
-  }
-  if (secondsPast <= 86400) {
-    return parseInt(secondsPast / 3600) + 'h';
-  }
-  if (secondsPast > 86400) {
-    const day = timeStamp.getDate();
-    const month = timeStamp
-      .toDateString()
-      .match(/ [a-zA-Z]*/)[0]
-      .replace(' ', '');
-    const year =
-      timeStamp.getFullYear() === now.getFullYear()
-        ? ''
-        : ' ' + timeStamp.getFullYear();
-    return day + ' ' + month + year;
-  }
+// Network<>chainId Helpers
+const networks = {
+  1: 'main',
+  3: 'ropsten',
+  4: 'rinkeby',
+  5: 'goerli',
+  42: 'kovan',
+  1337: 'private'
+};
+function getKeyByValue(object, value) {
+  return Object.keys(object).find(key => object[key] === value);
+}
+export const chainIdToNetwork = chainId => {
+  return networks[chainId];
+};
+export const networkToChainId = network => {
+  return Number(getKeyByValue(networks, network));
 };

@@ -1,7 +1,5 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { gql } from 'apollo-boost';
-import { useQuery } from '@apollo/react-hooks';
 import { Identicon } from 'ethereum-react-components';
 import { Link } from 'react-router-dom';
 import { withStyles } from '@material-ui/core/styles';
@@ -9,30 +7,7 @@ import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import ListItemAvatar from '@material-ui/core/ListItemAvatar';
-import web3 from '../lib/web3';
-
-function Balance({ address }) {
-  const { loading, error, data } = useQuery(
-    gql`
-      query Balance($address: Address!) {
-        block {
-          account(address: $address) {
-            balance
-          }
-        }
-      }
-    `,
-    {
-      variables: { address }
-    }
-  );
-
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p>Error: {error}</p>;
-
-  const balanceEther = web3.utils.fromWei(data.block.account.balance, 'ether');
-  return `${balanceEther} ether`;
-}
+import Balance from '../queries/Balance';
 
 const styles = {
   listItem: {
@@ -65,7 +40,7 @@ class AccountList extends React.Component {
     return (
       <List className={classes.list}>
         {accounts.map(account => {
-          const { address } = account;
+          const { name, address } = account;
           return (
             <Link to={`/accounts/${address}`} key={address}>
               <ListItem className={classes.listItem} button>
@@ -77,7 +52,7 @@ class AccountList extends React.Component {
                   />
                 </ListItemAvatar>
                 <ListItemText
-                  primary={address}
+                  primary={name || address}
                   secondary={<Balance address={address} />}
                 />
               </ListItem>

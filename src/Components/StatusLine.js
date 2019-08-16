@@ -9,9 +9,10 @@ import Box from '@material-ui/core/Box';
 import LayersIcon from '@material-ui/icons/Layers';
 import AvTimerIcon from '@material-ui/icons/AvTimer';
 import web3 from '../lib/web3';
+import { chainIdToNetwork } from '../lib/utils';
 
 function LatestBlock(props) {
-  const { classes } = props;
+  const { classes, network } = props;
   const { loading, error, data } = useQuery(
     gql`
       {
@@ -25,7 +26,7 @@ function LatestBlock(props) {
   );
 
   if (loading) return <p>Loading...</p>;
-  if (error) return <p>Error: {error.toString()}</p>;
+  if (error) return <p>{error.toString()}</p>;
 
   const blockNumber = Number(
     web3.utils.hexToNumberString(data.block.number)
@@ -51,6 +52,10 @@ function LatestBlock(props) {
       ) : (
         <span>Not connected to latest blocks</span>
       )}
+      <span>
+        {' '}
+        on <span style={{ textTransform: 'capitalize' }}>{network}</span>
+      </span>
       <LayersIcon className={classes.icon} />
       {blockNumber}
       <span
@@ -96,18 +101,35 @@ class StatusLine extends React.Component {
     classes: PropTypes.object.isRequired
   };
 
-  state = {
-    timestampColor: 'green'
-  };
+  constructor(props) {
+    super(props);
+    this.state = {
+      network: null,
+      timestampColor: 'green'
+    };
+    this.setNetwork();
+  }
+
+  async setNetwork() {
+    console.log(web3);
+    const chainId = await web3.eth.net.getId();
+    console.log(chainId);
+    const network = chainIdToNetwork(chainId);
+    this.setState({ network });
+  }
 
   render() {
     const { classes } = this.props;
-    const { timestampColor } = this.state;
+    const { timestampColor, network } = this.state;
     return (
       <Grid container spacing={3}>
         <Grid item xs={12}>
           <Box className={classes.statusBox}>
-            <LatestBlock classes={classes} timestampColor={timestampColor} />
+            <LatestBlock
+              classes={classes}
+              timestampColor={timestampColor}
+              network={network}
+            />
           </Box>
         </Grid>
       </Grid>

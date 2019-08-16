@@ -19,13 +19,13 @@ export const addAccounts = addresses => {
     const { accounts: existingAccounts } = getState().app;
     const newAccounts = [];
     addresses.forEach(address => {
-      // Only add unique addresses to the store.
+      const checksumAddress = web3.utils.toChecksumAddress(address);
+      // Only add new unique addresses to accounts.
       if (
-        existingAccounts.filter(account => account.address === address)
+        existingAccounts.filter(account => account.address === checksumAddress)
           .length === 0
       ) {
-        const account = accountInterface(address);
-        console.log(account);
+        const account = accountInterface(checksumAddress);
         newAccounts.push(account);
       }
     });
@@ -40,5 +40,12 @@ export const removeAccount = address => {
   return {
     type: 'ACCOUNTS:REMOVE',
     payload: { address }
+  };
+};
+
+export const updateAccountName = (name, address) => {
+  return {
+    type: 'ACCOUNTS:UPDATE_NAME',
+    payload: { name, address }
   };
 };

@@ -20,6 +20,19 @@ const app = (state = initialState, action) => {
         ]
       };
     }
+    case 'ACCOUNTS:UPDATE_NAME': {
+      const { name, address } = action.payload;
+      const accounts = [
+        ...state.accounts.map(account => {
+          if (account.address === address) account.name = name;
+          return account;
+        })
+      ];
+      return {
+        ...state,
+        accounts
+      };
+    }
     default:
       return state;
   }
