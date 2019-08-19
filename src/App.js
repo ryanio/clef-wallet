@@ -69,7 +69,7 @@ class App extends React.Component {
                 <Container>
                   <StatusLine />
                   <Route exact path="/" component={Dashboard} />
-                  <Route path={`/accounts/:address`} component={Account} />
+                  <Route path={`/address/:address`} component={Account} />
                   <Route path="/settings" component={Settings} />
                 </Container>
               </main>

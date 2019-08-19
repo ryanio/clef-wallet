@@ -1,5 +1,6 @@
 export const initialState = {
-  accounts: []
+  accounts: [],
+  tokens: []
 };
 
 const app = (state = initialState, action) => {
@@ -22,15 +23,34 @@ const app = (state = initialState, action) => {
     }
     case 'ACCOUNTS:UPDATE_NAME': {
       const { name, address } = action.payload;
-      const accounts = [
-        ...state.accounts.map(account => {
-          if (account.address === address) account.name = name;
+      const accounts = state.accounts.map(account => {
+        if (account.address !== address) {
+          // This isn't the item we care about - keep it as-is
           return account;
-        })
-      ];
+        }
+        // Otherwise, this is the one we want - return updated name
+        return {
+          ...account,
+          name
+        };
+      });
       return {
         ...state,
         accounts
+      };
+    }
+    case 'TOKENS:ADD': {
+      const { tokens } = action.payload;
+      return {
+        ...state,
+        tokens: [...state.tokens, ...tokens]
+      };
+    }
+    case 'TOKENS:REMOVE': {
+      const { address } = action.payload;
+      return {
+        ...state,
+        tokens: [...state.tokens.filter(token => token.address !== address)]
       };
     }
     default:

@@ -20,6 +20,10 @@ function LatestBlock(props) {
           number
           timestamp
         }
+        syncing {
+          highestBlock
+          currentBlock
+        }
       }
     `,
     { pollInterval: 3000 }
@@ -33,39 +37,57 @@ function LatestBlock(props) {
   ).toLocaleString();
   const timestamp = Number(web3.utils.hexToNumberString(data.block.timestamp));
 
-  let timestampColor = 'green';
+  // Status Color
+  let statusColor = 'green';
   const nowTimestamp = new Date().getTime() / 1000;
   if (nowTimestamp - timestamp >= 180) {
-    timestampColor = 'red';
+    statusColor = 'red';
   } else if (nowTimestamp - timestamp >= 60) {
-    timestampColor = 'orange';
+    statusColor = 'orange';
+  }
+
+  // Syncing
+  let syncing;
+  if (data.syncing) {
+    const { highestBlock, currentBlock } = data.syncing;
+    const blocksLeft = highestBlock - currentBlock;
+    syncing = <span>Syncing {blocksLeft.toLocaleString()} blocks left...</span>;
+  } else {
+    syncing = null;
   }
 
   return (
     <span>
       <Box
-        className={classes.statusIcon}
-        style={{ backgroundColor: timestampColor }}
-      />
-      {timestampColor === 'green' ? (
-        <span>Connected to latest blocks</span>
+        className={classes.statusDot}
+        style={{ backgroundColor: statusColor }}
+      />{' '}
+      {syncing ? (
+        syncing
       ) : (
-        <span>Not connected to latest blocks</span>
+        <span>
+          {statusColor === 'green' ? (
+            <span>Connected to latest blocks</span>
+          ) : (
+            <span>Not connected to latest blocks</span>
+          )}
+          <span>
+            {' '}
+            on <span style={{ textTransform: 'capitalize' }}>{network}</span>
+          </span>
+          <LayersIcon className={classes.icon} />
+          {blockNumber}
+          <span
+            className={classes.timeAgo}
+            style={{
+              color: statusColor === 'green' ? 'black' : statusColor
+            }}
+          >
+            <AvTimerIcon className={classes.icon} />
+            Last block registered <TimeAgo date={new Date(timestamp) * 1000} />
+          </span>
+        </span>
       )}
-      <span>
-        {' '}
-        on <span style={{ textTransform: 'capitalize' }}>{network}</span>
-      </span>
-      <LayersIcon className={classes.icon} />
-      {blockNumber}
-      <span
-        className={classes.timeAgo}
-        style={{ color: timestampColor === 'green' ? 'black' : timestampColor }}
-      >
-        <AvTimerIcon className={classes.icon} />
-        {timestampColor !== 'green' && <span>Last block registered </span>}
-        <TimeAgo date={new Date(timestamp) * 1000} />
-      </span>
     </span>
   );
 }
@@ -77,7 +99,7 @@ const styles = {
     marginRight: 4,
     verticalAlign: 'middle'
   },
-  statusIcon: {
+  statusDot: {
     width: 12,
     height: 12,
     borderRadius: 999,
@@ -104,32 +126,25 @@ class StatusLine extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      network: null,
-      timestampColor: 'green'
+      network: null
     };
     this.setNetwork();
   }
 
   async setNetwork() {
-    console.log(web3);
     const chainId = await web3.eth.net.getId();
-    console.log(chainId);
     const network = chainIdToNetwork(chainId);
     this.setState({ network });
   }
 
   render() {
     const { classes } = this.props;
-    const { timestampColor, network } = this.state;
+    const { network } = this.state;
     return (
       <Grid container spacing={3}>
         <Grid item xs={12}>
           <Box className={classes.statusBox}>
-            <LatestBlock
-              classes={classes}
-              timestampColor={timestampColor}
-              network={network}
-            />
+            <LatestBlock classes={classes} network={network} />
           </Box>
         </Grid>
       </Grid>
