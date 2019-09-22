@@ -42,7 +42,7 @@ class AccountList extends React.Component {
         {accounts.map(account => {
           const { name, address } = account;
           return (
-            <Link to={`/address/${address}`} key={address}>
+            <Link to={`/accounts/${address}`} key={address}>
               <ListItem className={classes.listItem} button>
                 <ListItemAvatar style={{ textAlign: 'center' }}>
                   <Identicon

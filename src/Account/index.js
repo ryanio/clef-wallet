@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { Route } from 'react-router-dom';
 import { Identicon } from 'ethereum-react-components';
 import { toast } from 'react-toastify';
-import { RIEInput } from 'riek';
+import ContentEditable from 'react-contenteditable';
 import QRCode from 'qrcode.react';
 import { withStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
@@ -14,26 +14,17 @@ import Button from '@material-ui/core/Button';
 import Balance from '../queries/Balance';
 import {
   accountInterface,
-  addAccounts,
   removeAccount,
   updateAccountName
 } from '../store/app/actions';
-import Notification from '../components/Notification';
-import web3 from '../lib/web3';
 
 const styles = {
   paper: { padding: 25 },
   removeAccount: {
+    marginTop: 30,
     color: 'red',
-    opacity: 0.3,
     transition: 'opacity 0.1s',
-    '&:hover': {
-      opacity: 1
-    }
-  },
-  addAccount: {
     opacity: 0.3,
-    transition: 'opacity 0.1s',
     '&:hover': {
       opacity: 1
     }
@@ -43,19 +34,14 @@ const styles = {
 class Account extends React.Component {
   static propTypes = {
     classes: PropTypes.object.isRequired,
-    account: PropTypes.object.isRequired,
+    account: PropTypes.object,
     dispatch: PropTypes.func.isRequired
   };
 
-  handleChangeName({ name }) {
+  handleChangeName(event) {
     const { account, dispatch } = this.props;
-    dispatch(updateAccountName(name, account.address));
-  }
-
-  addAccount(account) {
-    const { dispatch } = this.props;
-    dispatch(addAccounts([account.address]));
-    toast.info(`Added: ${account.name}`);
+    const newName = event.target.value;
+    dispatch(updateAccountName(newName, account.address));
   }
 
   removeAccount(account, history) {
@@ -83,33 +69,12 @@ class Account extends React.Component {
     );
   }
 
-  renderAddAccountButton() {
-    const { account, classes } = this.props;
-    return (
-      <Button
-        className={classes.addAccount}
-        onClick={() => this.addAccount(account)}
-      >
-        Add Account
-      </Button>
-    );
-  }
-
   render() {
-    const { classes, account, ownAccount } = this.props;
-    const showAddAccountButton = !ownAccount && !account.checksumInvalid;
+    const { classes, account } = this.props;
     return (
       <Grid container spacing={3}>
         <Grid item xs={12}>
           <Paper className={classes.paper}>
-            {account.checksumInvalid && (
-              <Grid item xs={12} style={{ marginBottom: 30 }}>
-                <Notification
-                  type="error"
-                  message="Warning: Invalid Checksum. The checksum for this address is invalid. It might not be a real address."
-                />
-              </Grid>
-            )}
             <Grid container justify="space-between">
               <Grid item>
                 <Grid container>
@@ -122,18 +87,10 @@ class Account extends React.Component {
                   </Grid>
                   <Grid item>
                     <Typography variant="h6">
-                      {!ownAccount && <span>{account.name}</span>}
-                      {ownAccount && (
-                        <RIEInput
-                          value={account.name}
-                          change={this.handleChangeName.bind(this)}
-                          propName="name"
-                          validate={value => {
-                            return value !== '';
-                          }}
-                          editProps={{ style: { fontSize: 20 } }}
-                        />
-                      )}
+                      <ContentEditable
+                        html={account.name}
+                        onChange={this.handleChangeName.bind(this)}
+                      />
                     </Typography>
                     <Typography variant="subtitle1">
                       {account.address}
@@ -147,9 +104,10 @@ class Account extends React.Component {
               <Grid item xs={12}>
                 <strong>Balance:</strong> <Balance address={account.address} />
               </Grid>
-              <Grid item xs={12} style={{ marginTop: 80 }}>
-                {showAddAccountButton && this.renderAddAccountButton()}
-                {ownAccount && this.renderRemoveAccountButton()}
+              <Grid item xs={12}>
+                <div style={{ marginTop: 40 }}>
+                  {this.renderRemoveAccountButton()}
+                </div>
               </Grid>
             </Grid>
           </Paper>
@@ -161,22 +119,12 @@ class Account extends React.Component {
 
 const mapStateToProps = (state, ownProps) => {
   const { address } = ownProps.match.params;
-  const checksumAddress = web3.utils.toChecksumAddress(address);
-  let account = state.app.accounts.find(
-    account => account.address === checksumAddress
-  );
-  let ownAccount = true;
+  let account = state.app.accounts.find(account => account.address === address);
   if (!account) {
-    ownAccount = false;
     account = accountInterface(address);
   }
-  const checksumResult = web3.utils.checkAddressChecksum(address);
-  if (!checksumResult) {
-    account = { ...account, checksumInvalid: true };
-  }
   return {
-    account,
-    ownAccount
+    account
   };
 };
 
