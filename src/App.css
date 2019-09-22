@@ -1,15 +1,16 @@
 body {
-  background-color: #282c34;
+  background-color: #eee;
 }
 
 a {
   text-decoration: none;
+  color: black;
 }
 
 .App {
 }
 
-.app-header {
+.App-header {
   background-color: #282c34;
   display: flex;
   flex-direction: column;
@@ -19,32 +20,18 @@ a {
   padding: 10px;
 }
 
-.app-header a {
+.App-header a {
   color: inherit;
 }
 
-.app-header h1 {
-  font-size: 24px;
-  font-family: 'Courier New', Courier, 'Lucida Sans Typewriter',
-    'Lucida Typewriter', monospace;
+.App-header h1 {
+  font-size: 26px;
   display: inline-block;
   vertical-align: middle;
   margin-right: 20px;
   user-select: none;
-  padding-top: 10px;
 }
 
 main {
   padding: 30px;
-  /* background generated at
-  https://jsbin.com/hucazo/embed?html,css,output
-  */
-  background: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI1NiIgaGVpZ2h0PSIxMDAiPgo8cmVjdCB3aWR0aD0iNTYiIGhlaWdodD0iMTAwIiBmaWxsPSIjMzg3NTc3Ij48L3JlY3Q+CjxwYXRoIGQ9Ik0yOCA2NkwwIDUwTDAgMTZMMjggMEw1NiAxNkw1NiA1MEwyOCA2NkwyOCAxMDAiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzNmODU4OCIgc3Ryb2tlLXdpZHRoPSIyIj48L3BhdGg+CjxwYXRoIGQ9Ik0yOCAwTDI4IDM0TDAgNTBMMCA4NEwyOCAxMDBMNTYgODRMNTYgNTBMMjggMzQiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzNmODU4OCIgc3Ryb2tlLXdpZHRoPSIyIj48L3BhdGg+Cjwvc3ZnPg==');
-}
-
-.app-footer {
-}
-
-.MuiPaper-root.MuiPaper-elevation1 {
-  background: #f7f7f7;
 }
