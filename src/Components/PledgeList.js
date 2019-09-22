@@ -7,7 +7,7 @@ import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import ListItemAvatar from '@material-ui/core/ListItemAvatar';
-import TokenBalance from '../queries/TokenBalance';
+import Balance from '../queries/Balance';
 
 const styles = {
   listItem: {
@@ -20,27 +20,27 @@ const styles = {
   }
 };
 
-class TokenList extends React.Component {
+class AccountList extends React.Component {
   static propTypes = {
     classes: PropTypes.object.isRequired,
-    tokens: PropTypes.array.isRequired
+    accounts: PropTypes.array.isRequired
   };
 
   render() {
-    const { classes, tokens } = this.props;
+    const { classes, accounts } = this.props;
 
-    if (tokens.length === 0) {
+    if (accounts.length === 0) {
       return (
         <p>
-          <em>No tokens.</em>
+          <em>No accounts.</em>
         </p>
       );
     }
 
     return (
       <List className={classes.list}>
-        {tokens.map(token => {
-          const { name, address } = token;
+        {accounts.map(account => {
+          const { name, address } = account;
           return (
             <Link to={`/address/${address}`} key={address}>
               <ListItem className={classes.listItem} button>
@@ -53,9 +53,7 @@ class TokenList extends React.Component {
                 </ListItemAvatar>
                 <ListItemText
                   primary={name || address}
-                  secondary={
-                    <TokenBalance forAddress={address} token={token} />
-                  }
+                  secondary={<Balance address={address} />}
                 />
               </ListItem>
             </Link>
@@ -66,4 +64,4 @@ class TokenList extends React.Component {
   }
 }
 
-export default withStyles(styles)(TokenList);
+export default withStyles(styles)(AccountList);

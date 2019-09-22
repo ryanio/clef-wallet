@@ -1,3 +1,17 @@
+# IPFS Pin Market App
+
+This is the IPFS Pin Market app being served at `https://ipfspin.market`.
+
+## Dev
+
+Run `yarn` to set up the development environment. Then run `yarn start` to serve the app in development at `localhost:3000`.
+
+### Release Pipeline
+
+Todo: Create a CI release pipeline with [dnslink-cloudflare](https://github.com/ipfs-shipyard/dnslink-cloudflare) to automatically update the IPFS hash at `ipfspin.market` after a new release.
+
+---
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts
